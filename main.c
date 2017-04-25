@@ -8,8 +8,8 @@
 
 void world_init(bool m[TAM_X][TAM_Y]);
 void world_print(bool m[TAM_X][TAM_Y]);
-void world_step(/* Recibo dos mundos */);
-int world_count_neighbors(/* Recibo un mundo y unas coordenadas */);
+void world_step(bool m1[TAM_X][TAM_Y], bool m2[TAM_X][TAM_Y]);
+int world_count_neighbors(bool m[TAM_X][TAM_Y], int i, int j);
 bool world_get_cell(bool m[TAM_X][TAM_Y], int i, int j);
 void world_copy(bool destino[TAM_X][TAM_Y], bool fuente[TAM_X][TAM_Y]);
 
@@ -62,23 +62,38 @@ void world_print(bool m[TAM_X][TAM_Y])
 	}
 }
 
-void world_step(/* Recibo dos mundos */)
+void world_step(bool m1[TAM_X][TAM_Y], bool m2[TAM_X][TAM_Y])
 {
-	/*
-	 * TODO:
-	 * - Recorrer el mundo célula por célula comprobando si nace, sobrevive
-	 *   o muere.
-	 *
-	 * - No se puede cambiar el estado del mundo a la vez que se recorre:
-	 *   Usar un mundo auxiliar para guardar el siguiente estado.
-	 *
-	 * - Copiar el mundo auxiliar sobre el mundo principal
-	 */
+	
+	 int vivas = 0;
+	 
+	 for (int i=0; i<TAM_X; i++)
+	{
+		for (int j=0; j<TAM_Y; j++)
+		{
+			vivas = world_count_neighbors(m1, i, j);
+			m2[i][j] = (m1[i][j] && vivas == 2) || vivas == 3;
+		}
+	}
+	
+	world_copy(m1, m2);
 }
 
-int world_count_neighbors(/* Recibo un mundo y unas coordenadas */)
+int world_count_neighbors(bool m[TAM_X][TAM_Y], int i, int j)
 {
-	// Devuelve el número de vecinos
+	
+	int vecinos = 0;
+	
+	vecinos += world_get_cell(m, i + 1, j);
+	vecinos += world_get_cell(m, i + 1, j - 1);
+	vecinos += world_get_cell(m, i , j - 1);
+	vecinos += world_get_cell(m, i - 1 , j - 1);
+	vecinos += world_get_cell(m, i - 1  , j );
+	vecinos += world_get_cell(m, i - 1, j + 1);
+	vecinos += world_get_cell(m, i , j +  1);
+	vecinos += world_get_cell(m, i + 1, j + 1);
+	
+	return vecinos;
 }
 
 bool world_get_cell(bool m[TAM_X][TAM_Y], int i, int j)
