@@ -10,8 +10,8 @@ void world_init(bool m[TAM_X][TAM_Y]);
 void world_print(bool m[TAM_X][TAM_Y]);
 void world_step(/* Recibo dos mundos */);
 int world_count_neighbors(/* Recibo un mundo y unas coordenadas */);
-bool world_get_cell(/* Recibo un mundo y unas coordenadas */);
-void world_copy(/* Recibo dos mundos */);
+bool world_get_cell(bool m[TAM_X][TAM_Y], int i, int j);
+void world_copy(bool destino[TAM_X][TAM_Y], bool fuente[TAM_X][TAM_Y]);
 
 int main()
 {
@@ -81,15 +81,25 @@ int world_count_neighbors(/* Recibo un mundo y unas coordenadas */)
 	// Devuelve el número de vecinos
 }
 
-bool world_get_cell(/* Recibo un mundo y unas coordenadas */)
+bool world_get_cell(bool m[TAM_X][TAM_Y], int i, int j)
 {
-	/*
-	 * TODO: Devuelve el estado de la célula de posición indicada
-	 * (¡cuidado con los límites del array!)
-	 */
+	
+		if (i == -1)
+			i += TAM_X;
+		else if (i == TAM_X)
+			i -= TAM_X;
+		if (j == -1)
+			j += TAM_Y;
+		else if (j == TAM_Y)
+			j -= TAM_Y;
+
+		return m[i][j];
 }
 
-void world_copy(/* Recibo dos mundos */)
+void world_copy(bool destino[TAM_X][TAM_Y], bool fuente[TAM_X][TAM_Y])
 {
-	// TODO: copia el mundo segundo mundo sobre el primero
+
+	for (int i=0; i<TAM_X; i++)
+			for (int j=0; j<TAM_Y; j++)
+				destino[i][j]=fuente[i][j];
 }
