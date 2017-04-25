@@ -19,11 +19,13 @@ int main()
 	
 	bool m1[TAM_X][TAM_Y];
 	bool m2[TAM_X][TAM_Y]; 
-	// TODO: inicializa el mundo
+	
+	world_init(m1);
 	do {
 		printf("\033cIteration %d\n", i++);
-		// TODO: Imprime el mundo
-		// TODO: Itera
+		
+		world_print(m1);
+		world_step(m1, m2);
 	} while (getchar() != 'q');
 
 	return EXIT_SUCCESS;
