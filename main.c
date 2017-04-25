@@ -6,8 +6,8 @@
 #define TAM_X 10
 #define TAM_Y 10
 
-void world_init(/* Recibo un mundo */);
-void world_print(/* Recibo un mundo */);
+void world_init(bool m[TAM_X][TAM_Y]);
+void world_print(bool m[TAM_X][TAM_Y]);
 void world_step(/* Recibo dos mundos */);
 int world_count_neighbors(/* Recibo un mundo y unas coordenadas */);
 bool world_get_cell(/* Recibo un mundo y unas coordenadas */);
@@ -29,32 +29,37 @@ int main()
 	return EXIT_SUCCESS;
 }
 
-void world_init(/* Recibo un mundo */)
+void world_init(bool m[TAM_X][TAM_Y])
 {
-	// TODO: Poner el mundo a false
+	
+	 for (int i=0; i<TAM_X; i++)
+		for (int j=0; j<TAM_Y; j++)
+			m[i][j]=false;
+					
 
-	/* TODO: Inicializar con el patrón del glider:
-	 *           . # .
-	 *           . . #
-	 *           # # #
-	 */
+	
+		m[0][1]=true;
+		m[1][2]=true;
+		m[2][0]=true;
+		m[2][1]=true;
+		m[2][2]=true;
 }
 
-void world_print(/* Recibo un mundo */)
+void world_print(bool m[TAM_X][TAM_Y])
 {
-	// TODO: Imprimir el mundo por consola. Sugerencia:
-	/*
-	 *     . # . . . . . . . .
-	 *     . . # . . . . . . .
-	 *     # # # . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 */
+	
+	 for (int i=0; i<TAM_X; i++)
+	{
+		for (int j=0; j<TAM_Y; j++)
+		{
+			if(m[i][j]==true)
+					printf("#");
+			else
+					printf(".");
+		}
+			
+		printf("\n");
+	}
 }
 
 void world_step(/* Recibo dos mundos */)
