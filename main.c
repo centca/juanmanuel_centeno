@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// TODO: Crea dos macros con el tamaño horizontal y vertical del mundo
+
+#define TAM_X 10
+#define TAM_Y 10
 
 void world_init(/* Recibo un mundo */);
 void world_print(/* Recibo un mundo */);
@@ -14,8 +16,9 @@ void world_copy(/* Recibo dos mundos */);
 int main()
 {
 	int i = 0;
-	// TODO: Declara dos mundos
-
+	
+	bool m1[TAM_X][TAM_Y];
+	bool m2[TAM_X][TAM_Y]; 
 	// TODO: inicializa el mundo
 	do {
 		printf("\033cIteration %d\n", i++);
