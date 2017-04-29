@@ -2,86 +2,121 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// TODO: Crea dos macros con el tamaño horizontal y vertical del mundo
 
-void world_init(/* Recibo un mundo */);
-void world_print(/* Recibo un mundo */);
-void world_step(/* Recibo dos mundos */);
-int world_count_neighbors(/* Recibo un mundo y unas coordenadas */);
-bool world_get_cell(/* Recibo un mundo y unas coordenadas */);
-void world_copy(/* Recibo dos mundos */);
+#define TAM_X 10
+#define TAM_Y 10
+
+void world_init(bool m[TAM_X][TAM_Y]);
+void world_print(bool m[TAM_X][TAM_Y]);
+void world_step(bool m1[TAM_X][TAM_Y], bool m2[TAM_X][TAM_Y]);
+int world_count_neighbors(bool m[TAM_X][TAM_Y], int i, int j);
+bool world_get_cell(bool m[TAM_X][TAM_Y], int i, int j);
+void world_copy(bool destino[TAM_X][TAM_Y], bool fuente[TAM_X][TAM_Y]);
 
 int main()
 {
 	int i = 0;
-	// TODO: Declara dos mundos
-
-	// TODO: inicializa el mundo
+	
+	bool m1[TAM_X][TAM_Y];
+	bool m2[TAM_X][TAM_Y]; 
+	
+	world_init(m1);
 	do {
 		printf("\033cIteration %d\n", i++);
-		// TODO: Imprime el mundo
-		// TODO: Itera
+		
+		world_print(m1);
+		world_step(m1, m2);
 	} while (getchar() != 'q');
 
 	return EXIT_SUCCESS;
 }
 
-void world_init(/* Recibo un mundo */)
+void world_init(bool m[TAM_X][TAM_Y])
 {
-	// TODO: Poner el mundo a false
+	
+	 for (int i=0; i<TAM_X; i++)
+		for (int j=0; j<TAM_Y; j++)
+			m[i][j]=false;
+					
 
-	/* TODO: Inicializar con el patrón del glider:
-	 *           . # .
-	 *           . . #
-	 *           # # #
-	 */
+	
+		m[0][1]=true;
+		m[1][2]=true;
+		m[2][0]=true;
+		m[2][1]=true;
+		m[2][2]=true;
 }
 
-void world_print(/* Recibo un mundo */)
+void world_print(bool m[TAM_X][TAM_Y])
 {
-	// TODO: Imprimir el mundo por consola. Sugerencia:
-	/*
-	 *     . # . . . . . . . .
-	 *     . . # . . . . . . .
-	 *     # # # . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 */
+	
+	 for (int i=0; i<TAM_X; i++)
+	{
+		for (int j=0; j<TAM_Y; j++)
+		{
+			if(m[i][j]==true)
+					printf("#");
+			else
+					printf(".");
+		}
+			
+		printf("\n");
+	}
 }
 
-void world_step(/* Recibo dos mundos */)
+void world_step(bool m1[TAM_X][TAM_Y], bool m2[TAM_X][TAM_Y])
 {
-	/*
-	 * TODO:
-	 * - Recorrer el mundo célula por célula comprobando si nace, sobrevive
-	 *   o muere.
-	 *
-	 * - No se puede cambiar el estado del mundo a la vez que se recorre:
-	 *   Usar un mundo auxiliar para guardar el siguiente estado.
-	 *
-	 * - Copiar el mundo auxiliar sobre el mundo principal
-	 */
+	
+	 int vivas = 0;
+	 
+	 for (int i=0; i<TAM_X; i++)
+	{
+		for (int j=0; j<TAM_Y; j++)
+		{
+			vivas = world_count_neighbors(m1, i, j);
+			m2[i][j] = (m1[i][j] && vivas == 2) || vivas == 3;
+		}
+	}
+	
+	world_copy(m1, m2);
 }
 
-int world_count_neighbors(/* Recibo un mundo y unas coordenadas */)
+int world_count_neighbors(bool m[TAM_X][TAM_Y], int i, int j)
 {
-	// Devuelve el número de vecinos
+	
+	int vecinos = 0;
+	
+	vecinos += world_get_cell(m, i + 1, j);
+	vecinos += world_get_cell(m, i + 1, j - 1);
+	vecinos += world_get_cell(m, i , j - 1);
+	vecinos += world_get_cell(m, i - 1 , j - 1);
+	vecinos += world_get_cell(m, i - 1  , j );
+	vecinos += world_get_cell(m, i - 1, j + 1);
+	vecinos += world_get_cell(m, i , j +  1);
+	vecinos += world_get_cell(m, i + 1, j + 1);
+	
+	return vecinos;
 }
 
-bool world_get_cell(/* Recibo un mundo y unas coordenadas */)
+bool world_get_cell(bool m[TAM_X][TAM_Y], int i, int j)
 {
-	/*
-	 * TODO: Devuelve el estado de la célula de posición indicada
-	 * (¡cuidado con los límites del array!)
-	 */
+	
+		if (i == -1)
+			i += TAM_X;
+		else if (i == TAM_X)
+			i -= TAM_X;
+		if (j == -1)
+			j += TAM_Y;
+		else if (j == TAM_Y)
+			j -= TAM_Y;
+
+		return m[i][j];
 }
 
-void world_copy(/* Recibo dos mundos */)
+void world_copy(bool destino[TAM_X][TAM_Y], bool fuente[TAM_X][TAM_Y])
 {
-	// TODO: copia el mundo segundo mundo sobre el primero
+
+	for (int i=0; i<TAM_X; i++)
+			for (int j=0; j<TAM_Y; j++)
+				destino[i][j]=fuente[i][j];
 }
