@@ -1,90 +1,132 @@
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <stdbool.h>
 #include "gol.h"
 
+struct world
+{	
+	bool *cells[2];
+ 	int tam_x;
+ 	int tam_y;
+	
+};
 
-void world_init(struct world *m)
+
+static void fix_coords(const struct world *m, int *i, int *j);
+static bool get_cell(const struct world *m, int i, int j);
+static void set_cell(struct world *m, int b, int i, int j, bool val);
+static int count_neighbors(const struct world *m, int i, int j);
+
+struct world *world_alloc(int tam_x, int tam_y)
 {
-	
-	 for (int i=0; i<TAM_X; i++)
-		for (int j=0; j<TAM_Y; j++)
-			m->m1[i][j]=false;
-					
+	struct world *m = (struct world *)malloc(sizeof(struct world));
+	if (!m)
+		return NULL;
 
+	m->cells[W_STOP] = (bool *)malloc((tam_x * tam_y) * sizeof(bool));
 	
-		m->m1[0][1]=true;
-		m->m1[1][2]=true;
-		m->m1[2][0]=true;
-		m->m1[2][1]=true;
-		m->m1[2][2]=true;
+	if (!m->cells[W_STOP]){
+		free(m);
+		return NULL;
+	}
+	
+	m->cells[W_STAR] = (bool *)malloc((tam_x * tam_y) * sizeof(bool));
+	if (!m->cells[W_STOP]){
+		
+		free(m->cells[W_STOP]);
+		free(m);
+		return NULL;
+	}
+	
+ 	for (int i = 0 ; i < TAM_X ; i++)
+ 		for (int j = 0; j < TAM_Y; j++)
+ 			set_cell(m, W_STOP, i, j, false);
+ 	
+	set_cell(m, W_STOP, 0, 1 , true);
+	set_cell(m, W_STOP, 1, 2 , true);
+	set_cell(m, W_STOP, 2, 0 , true);
+	set_cell(m, W_STOP, 2, 1 , true);
+	set_cell(m, W_STOP, 2, 2 , true);
+
+	return m;
 }
+
+void world_free(struct world *m)
+{
+	free(m->cells[W_STOP]);
+	free(m->cells[W_STAR]);
+	free(m);
+}
+
 
 void world_print(const struct world *m)
 {
 	
 	 for (int i=0; i<TAM_X; i++)
 	{
-		for (int j=0; j<TAM_Y; j++)
-				printf("%s ", world_get_cell(m, i, j) ? "#" : ".");
+		for (int j = 0; j < TAM_Y; j++)	
+			printf("%c " , get_cell(m, i, j) == 0 ? '.' : '#' );
+		
+			printf("\n");	
+  	}
+}
+
+void world_iterate(struct world *m)
+{
+  	for (int i = 0 ; i < TAM_X ; i++) {
+  		for (int j = 0; j < TAM_Y; j++) {
 			
-		printf("\n");
-	}
+ 			int vecinos = count_neighbors(m, i, j);
+			set_cell(m, W_STAR, i, j, ((get_cell(m, i, j) && vecinos == 2) || vecinos == 3) );
+  		}
+  	}
+	
+	bool *cambiar;
+	cambiar = m->cells[W_STOP];
+	m->cells[W_STOP] = m->cells[W_STAR];
+	m->cells[W_STAR] = cambiar;
+  }
+
+static void fix_coords(const struct world *m, int *i, int *j)
+{
+ 	
+	if (*i == -1)
+		*i = TAM_X - 1;
+	else if (*i == TAM_X)
+		*i = 0;
+	if (*j == -1)
+		*j = TAM_Y - 1;
+	else if (*j == TAM_Y)
+		*j = 0;
+  
+	
 }
 
-void world_step(struct world *m)
+
+static bool get_cell(const struct world *m, int i, int j)
 {
-	
-	 int vivas = 0;
-	 
-	 for (int i=0; i<TAM_X; i++)
-	{
-		for (int j=0; j<TAM_Y; j++)
-		{
-			vivas = world_count_neighbors(m, i, j);
-			m->m2[i][j] = (m->m1[i][j] && vivas == 2) || vivas == 3;
-		}
-	}
-	
-	world_copy(m);
+	fix_coords(m, &i, &j);
+	return *(m->cells[W_STOP] + (i * TAM_Y + j));
 }
 
-int world_count_neighbors(const struct world *m, int i, int j)
+static void set_cell(struct world *m, int b, int i, int j, bool val)
 {
 	
-	int vecinos = 0;
-	
-	vecinos += world_get_cell(m, i + 1, j);
-	vecinos += world_get_cell(m, i + 1, j - 1);
-	vecinos += world_get_cell(m, i , j - 1);
-	vecinos += world_get_cell(m, i - 1 , j - 1);
-	vecinos += world_get_cell(m, i - 1  , j );
-	vecinos += world_get_cell(m, i - 1, j + 1);
-	vecinos += world_get_cell(m, i , j +  1);
-	vecinos += world_get_cell(m, i + 1, j + 1);
-	
-	return vecinos;
+	fix_coords(m, &i, &j);
+	*(m->cells[b] + (i * TAM_Y + j)) = val;
 }
 
-bool world_get_cell(const struct world *m, int i, int j)
+static int count_neighbors(const struct world *m, int i, int j)
 {
-	
-		if (i == -1)
-			i += TAM_X;
-		else if (i == TAM_X)
-			i -= TAM_X;
-		if (j == -1)
-			j += TAM_Y;
-		else if (j == TAM_Y)
-			j -= TAM_Y;
+	int c = 0;
 
-		return m->m1[i][j];
-}
-
-void world_copy(struct world *m)
-{
-
-	for (int i=0; i<TAM_X; i++)
-			for (int j=0; j<TAM_Y; j++)
-				m->m1[i][j] = m->m2[i][j];
+	c += get_cell(m, i , j - 1);
+	c += get_cell(m, i , j + 1);
+	c += get_cell(m, i + 1, j - 1);
+	c += get_cell(m, i + 1, j);
+	c += get_cell(m, i + 1, j + 1);
+	c += get_cell(m, i - 1, j - 1);
+	c += get_cell(m, i - 1, j);
+	c += get_cell(m, i - 1, j + 1);
+  
+	return c;
 }

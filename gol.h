@@ -7,17 +7,14 @@
 
 #define TAM_X 10
 #define TAM_Y 10
+#define W_STOP 0
+#define W_STAR 1
 
-struct world {
-        bool m1[TAM_X][TAM_Y];
-        bool m2[TAM_X][TAM_Y];
-};
+struct world;
 
-void world_init(struct world *m);
+struct world *world_alloc(int tam_x, int tam_y);
+void world_free(struct world *m);
 void world_print(const struct world *m);
-void world_step(struct world *m);
-int world_count_neighbors(const struct world *m, int i, int j);
-bool world_get_cell(const struct world *m, int i, int j);
-void world_copy(struct world *m);
+void world_iterate(struct world *m);
 
 #endif

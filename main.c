@@ -4,15 +4,24 @@
 
 int main()
 {
-	int i = 0;
-	struct world w;
 
-	world_init(&w);
-	do {
-		printf("\033cIteration %d\n", i++);
-		world_print(&w);
-		world_step(&w);
-	} while (getchar() != 'q');
+  	int i = 0;
+  
+	struct world *m  = world_alloc(TAM_X , TAM_Y);
+	if (!m) {
+		perror("No se puede asignar el mundo");
+		return EXIT_FAILURE;
+	}
+  
+  	do {
+  		printf("\033cIteration %d\n", i++);
 
-	return EXIT_SUCCESS;
-}
+		world_print(m);
+		world_iterate(m);
+
+  	} while (getchar() != 'q');
+  
+	world_free(m);
+
+  	return EXIT_SUCCESS;	
+} 
