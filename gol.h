@@ -5,11 +5,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define TAM_X 10
-#define TAM_Y 10
-#define W_STOP 0
-#define W_STAR 1
-
 struct world;
 
 struct world *world_alloc(int tam_x, int tam_y);

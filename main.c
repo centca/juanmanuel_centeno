@@ -6,8 +6,9 @@ int main()
 {
 
   	int i = 0;
-  
-	struct world *m  = world_alloc(TAM_X , TAM_Y);
+  	int x = 20;
+	int y = 20;
+	struct world *m  = world_alloc(x , y);
 	if (!m) {
 		perror("No se puede asignar el mundo");
 		return EXIT_FAILURE;
